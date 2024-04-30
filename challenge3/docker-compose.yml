@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - node-service
+
+  node-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:lastest
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: env.MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: env.MYSQL_DATABASE
+      MYSQL_USER: env.MYSQL_USER
+      MYSQL_PASSWORD: env.MYSQL_PASSWORD
+    volumes:
+      - ./db_data:/var/lib/mysql
